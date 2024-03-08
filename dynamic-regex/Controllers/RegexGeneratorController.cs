@@ -18,7 +18,7 @@ namespace dynamic_regex.Controllers
         public async Task<IActionResult> Generate([FromBody] GenerateRegexRequest request)
         {
             var result = _dynamicRegexGenerator.GenerateRegex(request.AllowNumeric, request.AllowAlphaNumeric, request.MinLength, request.MaxLength, request.AllowedSpecialChars, request.NotAllowedSpecialChars);
-            return Ok(result);
+            return Ok(new { Expression = result });
         }
 
         [HttpGet]
