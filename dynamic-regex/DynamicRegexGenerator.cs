@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using System.Text;
+using dynamic_regex.Models;
 
 namespace dynamic_regex
 {
@@ -9,42 +10,79 @@ namespace dynamic_regex
         {
             StringBuilder pattern = new StringBuilder();
 
-            pattern.Append('^'); // Start of string
+            pattern.Append('^'); 
 
             if (allowNumeric && allowAlpha)
             {
-                pattern.Append("[a-zA-Z0-9"); // Include both alphabetic and numeric characters
+                pattern.Append("[a-zA-Z0-9"); 
             }
             else if (allowNumeric)
             {
-                pattern.Append("[0-9"); // Include only numeric characters
+                pattern.Append("[0-9"); 
             }
             else if (allowAlpha)
             {
-                pattern.Append("[a-zA-Z"); // Include only alphabetic characters
+                pattern.Append("[a-zA-Z"); 
             }
 
             if (!string.IsNullOrEmpty(allowedSpecialChars))
             {
                 foreach (char c in allowedSpecialChars)
                 {
-                    pattern.Append(Regex.Escape(c.ToString())); // Append allowed special characters, escaped
+                    pattern.Append(Regex.Escape(c.ToString()));
                 }
             }
 
-            pattern.Append(']'); // Close the character class
+            pattern.Append(']');
 
-            pattern.AppendFormat("{{{0},{1}}}", minLength, maxLength); // Specify the length range
+            pattern.AppendFormat("{{{0},{1}}}", minLength, maxLength);
 
-            pattern.Append('$'); // End of string
+            pattern.Append('$'); 
 
             return pattern.ToString();
         }
 
-        public bool ValidateString(string input, string regexPattern)
+        public GenerateRegexResponse ValidateString(string input, string regexPattern)
         {
             Regex regex = new(regexPattern);
-            return regex.IsMatch(input);
+
+            var response = new GenerateRegexResponse();
+
+            if (regex.IsMatch(input))
+            {
+                response.Message = "Match found.";
+                response.IsValid = true;
+                return response;
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(input))
+                {
+                    response.Message = "Input is empty.";
+                    return response;
+                }
+
+                if (!regex.IsMatch(input))
+                {
+                    response.Message = "No part of the input matches the pattern.";
+                    return response;
+                }
+
+                int expectedLength = new Regex(regexPattern).Matches("AnyStringToGetLength").Count;
+                if (input.Length < expectedLength)
+                {
+                    response.Message = $"Input is too short. Expected at least {expectedLength} characters.";
+                    return response;
+                }
+                else if (input.Length > expectedLength)
+                {
+                    response.Message = $"Input is too long. Expected no more than {expectedLength} characters.";
+                    return response;
+                }
+
+                response.Message = "Input does not match the pattern.";
+                return response;
+            }
         }
     }
 }

@@ -17,12 +17,12 @@ namespace dynamic_regex.Controllers
         [HttpPost]
         public async Task<IActionResult> Generate([FromBody] GenerateRegexRequest request)
         {
-            var result = _dynamicRegexGenerator.GenerateRegex(request.AllowNumeric, request.AllowAlphaNumeric, request.MinLength, request.MaxLength, request.AllowedSpecialChars, request.NotAllowedSpecialChars);
+            var result = _dynamicRegexGenerator.GenerateRegex(request.AllowNumeric, request.AllowAlphaNumeric, request.MinLength, request.MaxLength, request.AllowedSpecialChars);
             return Ok(new { Expression = result });
         }
 
         [HttpGet]
         public async Task<IActionResult> Validate(string input, string regex)
-            => Ok(new { IsValid = _dynamicRegexGenerator.ValidateString(input, regex) });
+            => Ok(_dynamicRegexGenerator.ValidateString(input, regex));
     }
 }

@@ -7,6 +7,5 @@
         public int MinLength { get; set; }
         public int MaxLength { get; set; }
         public string AllowedSpecialChars { get; set; }
-        public string NotAllowedSpecialChars { get; set; }
     }
 }
