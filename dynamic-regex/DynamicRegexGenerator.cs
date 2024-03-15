@@ -8,7 +8,7 @@ namespace dynamic_regex
     {
         public string GenerateRegex(bool allowNumeric, bool allowAlpha, int minLength, int maxLength, string allowedSpecialChars = "")
         {
-            StringBuilder pattern = new StringBuilder();
+            StringBuilder pattern = new();
 
             pattern.Append('^'); 
 
