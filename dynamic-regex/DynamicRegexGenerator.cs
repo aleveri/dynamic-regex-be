@@ -12,25 +12,29 @@ namespace dynamic_regex
 
             pattern.Append('^');
 
+            // Start the character class.
+            pattern.Append('[');
+
             if (allowNumeric && allowAlpha)
             {
-                pattern.Append("[a-zA-Z0-9");
+                pattern.Append("a-zA-Z0-9");
             }
             else if (allowNumeric)
             {
-                pattern.Append("[0-9");
+                pattern.Append("0-9");
             }
             else if (allowAlpha)
             {
-                pattern.Append("[a-zA-Z");
+                pattern.Append("a-zA-Z");
             }
 
             if (!string.IsNullOrEmpty(allowedSpecialChars))
             {
-                var specialCharGroups = allowedSpecialChars.Split(',');
+                var specialCharGroups = allowedSpecialChars.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (var group in specialCharGroups)
                 {
-                    pattern.Append(Regex.Escape(group));
+                    var cleanGroup = group.Trim(new char[] { '[', ']' });
+                    pattern.Append(Regex.Escape(cleanGroup));
                 }
             }
 
