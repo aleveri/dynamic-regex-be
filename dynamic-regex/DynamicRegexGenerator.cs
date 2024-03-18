@@ -8,28 +8,29 @@ namespace dynamic_regex
     {
         public string GenerateRegex(bool allowNumeric, bool allowAlpha, int minLength, int maxLength, string allowedSpecialChars = "")
         {
-            StringBuilder pattern = new();
+            StringBuilder pattern = new StringBuilder();
 
-            pattern.Append('^'); 
+            pattern.Append('^');
 
             if (allowNumeric && allowAlpha)
             {
-                pattern.Append("[a-zA-Z0-9"); 
+                pattern.Append("[a-zA-Z0-9");
             }
             else if (allowNumeric)
             {
-                pattern.Append("[0-9"); 
+                pattern.Append("[0-9");
             }
             else if (allowAlpha)
             {
-                pattern.Append("[a-zA-Z"); 
+                pattern.Append("[a-zA-Z");
             }
 
             if (!string.IsNullOrEmpty(allowedSpecialChars))
             {
-                foreach (char c in allowedSpecialChars)
+                var specialCharGroups = allowedSpecialChars.Split(',');
+                foreach (var group in specialCharGroups)
                 {
-                    pattern.Append(Regex.Escape(c.ToString()));
+                    pattern.Append(Regex.Escape(group));
                 }
             }
 
@@ -37,7 +38,7 @@ namespace dynamic_regex
 
             pattern.AppendFormat("{{{0},{1}}}", minLength, maxLength);
 
-            pattern.Append('$'); 
+            pattern.Append('$');
 
             return pattern.ToString();
         }
