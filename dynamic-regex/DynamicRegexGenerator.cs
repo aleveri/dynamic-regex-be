@@ -6,26 +6,41 @@ namespace dynamic_regex
 {
     public class DynamicRegexGenerator
     {
-        public string GenerateRegex(bool allowNumeric, bool allowAlpha, int minLength, int maxLength, string allowedSpecialChars = "")
+        public string GenerateRegex(bool allowNumeric, bool allowAlpha, int minLength, int maxLength, string allowedSpecialChars = "", string prefix = "", string suffix = "", int? maxNumericLength = null, int? maxAlphaLength = null)
         {
             StringBuilder pattern = new StringBuilder();
 
             pattern.Append('^');
 
-            // Start the character class.
-            pattern.Append('[');
+            if (!string.IsNullOrEmpty(prefix))
+            {
+                pattern.Append(Regex.Escape(prefix));
+            }
 
-            if (allowNumeric && allowAlpha)
+            pattern.Append('(');
+
+            if (allowNumeric)
             {
-                pattern.Append("a-zA-Z0-9");
+                if (maxNumericLength.HasValue)
+                {
+                    pattern.Append("(\\d{1," + maxNumericLength.Value + "})");
+                }
+                else
+                {
+                    pattern.Append("\\d*"); 
+                }
             }
-            else if (allowNumeric)
+
+            if (allowAlpha)
             {
-                pattern.Append("0-9");
-            }
-            else if (allowAlpha)
-            {
-                pattern.Append("a-zA-Z");
+                if (maxAlphaLength.HasValue)
+                {
+                    pattern.Append("([a-zA-Z]{1," + maxAlphaLength.Value + "})");
+                }
+                else
+                {
+                    pattern.Append("[a-zA-Z]*");
+                }
             }
 
             if (!string.IsNullOrEmpty(allowedSpecialChars))
@@ -38,9 +53,14 @@ namespace dynamic_regex
                 }
             }
 
-            pattern.Append(']');
+            pattern.Append(')');
 
             pattern.AppendFormat("{{{0},{1}}}", minLength, maxLength);
+
+            if (!string.IsNullOrEmpty(suffix))
+            {
+                pattern.Append(Regex.Escape(suffix));
+            }
 
             pattern.Append('$');
 
